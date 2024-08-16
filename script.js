@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cubilis
     if (cubilisReservationForms.length > 0) {
       Array.from(cubilisReservationForms).forEach(function (reservationForm) {
+        cubilisReservationForms.querySelector('#startdate').setAttribute('required')
+        cubilisReservationForms.querySelector('#enddate').setAttribute('required')
+
         reservationForm.action += url
       })
     }
@@ -70,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Dirs
-    if (location.hostname.match('saarschleifenlodge')) {
+    if (document.querySelectorAll('.d21-trigger-ibe').length > 0) {
       let d21Trigger = document.querySelectorAll('.d21-trigger-ibe')
 
       d21Trigger.forEach(function (trigger) {
@@ -79,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (dirsIframeContainer) {
             let dirsIframe = dirsIframeContainer.querySelector('iframe')
             if (dirsIframe && !dirsIframe.src.includes('gclid') && !dirsIframe.src.includes('fclid')) {
-              dirsIframe.addEventListener('load', function() {
+              dirsIframe.addEventListener('load', function () {
                 this.src += url
               }, { once: true })
             }
