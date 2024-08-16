@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cubilis
     if (cubilisReservationForms.length > 0) {
       Array.from(cubilisReservationForms).forEach(function (reservationForm) {
-        cubilisReservationForms.querySelector('#startdate').setAttribute('required')
-        cubilisReservationForms.querySelector('#enddate').setAttribute('required')
+        reservationForm.querySelector('#startdate').setAttribute('required')
+        reservationForm.querySelector('#enddate').setAttribute('required')
 
         reservationForm.action += url
       })
