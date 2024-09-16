@@ -78,16 +78,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
       d21Trigger.forEach(function (trigger) {
         trigger.addEventListener('click', function () {
-          let dirsIframeContainer = document.querySelector('#d21-modal-fullsize')
-          if (dirsIframeContainer) {
-            let dirsIframe = dirsIframeContainer.querySelector('iframe')
-            if (dirsIframe && !dirsIframe.src.includes('gclid') && !dirsIframe.src.includes('fclid')) {
-              dirsIframe.addEventListener('load', function () {
-                this.src += url
-              }, { once: true })
-            }
-          }
-        })
+			setTimeout(function () {
+				let dirsIframeContainer = document.querySelector('#d21-modal-fullsize')
+				if (dirsIframeContainer) {
+					let dirsIframe = dirsIframeContainer.querySelector('iframe')
+					console.log('dirsIframe: ' + dirsIframe)
+					if (dirsIframe && !dirsIframe.src.includes('gclid') && !dirsIframe.src.includes('fclid')) {
+						dirsIframe.addEventListener('load', function () {
+							this.src += url
+						}, { once: true })
+					}
+				}
+			}, 2000)
+		})
       })
     }
 
