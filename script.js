@@ -22,23 +22,30 @@ document.addEventListener('DOMContentLoaded', function () {
     return item.value
   }
 
-  var urlParams = new URLSearchParams(window.location.search)
-  var gclid = urlParams.get('gclid')
-  var fclid = urlParams.get('fclid')
-  var ttl = 45 * 24 * 60 * 60 * 1000
+  function storeAllUrlParams() {
+    var urlParams = new URLSearchParams(window.location.search)
+    var ttl = 45 * 24 * 60 * 60 * 1000 // 45 days in milliseconds
 
-  if (gclid) {
-    var storedGclid = getLocalStorageWithExpiry('gclid')
-    if (storedGclid !== gclid) {
-      setLocalStorageWithExpiry('gclid', gclid, ttl)
-    }
+    urlParams.forEach(function (value, key) {
+      var storedValue = getLocalStorageWithExpiry(key)
+      if (storedValue !== value) {
+        setLocalStorageWithExpiry(key, value, ttl)
+      }
+    })
   }
 
-  if (fclid) {
-    var storedFclid = getLocalStorageWithExpiry('fclid')
-    if (storedFclid !== fclid) {
-      setLocalStorageWithExpiry('fclid', fclid, ttl)
+  storeAllUrlParams()
+
+  function getAllStoredParams() {
+    var url = ''
+    for (var i = 0 i < localStorage.length i++) {
+      var key = localStorage.key(i)
+      var value = getLocalStorageWithExpiry(key)
+      if (value) {
+        url += key + '=' + value + '&'
+      }
     }
+    return url.slice(0, -1) // Remove the trailing '&'
   }
 
   function changeFormAction() {
@@ -46,29 +53,20 @@ document.addEventListener('DOMContentLoaded', function () {
     var cubilisReservationLinks = document.querySelectorAll('a[href^="https://reservations.cubilis.eu"]')
     var hoteliersReservationLinks = document.querySelectorAll('a[href^="https://ibe.hoteliers.guru"]')
     var hoteliersReservationForms = document.querySelectorAll('form[action^="https://ibe.hoteliers.guru"]')
-    var url = ''
-
-    if (localStorage.getItem('gclid')) {
-      url += '?gclid=' + JSON.parse(localStorage.getItem('gclid')).value + '&'
-    }
-
-    if (localStorage.getItem('fclid')) {
-      url += '?fclid=' + JSON.parse(localStorage.getItem('fclid')).value + '&'
-    }
+    var url = getAllStoredParams()
 
     // Cubilis
     if (cubilisReservationForms.length > 0) {
       Array.from(cubilisReservationForms).forEach(function (reservationForm) {
         reservationForm.querySelector('#startdate').setAttribute('required', 'required')
         reservationForm.querySelector('#enddate').setAttribute('required', 'required')
-
-        reservationForm.action += url
+        reservationForm.action += '?' + url
       })
     }
 
     if (cubilisReservationLinks.length > 0) {
       Array.from(cubilisReservationLinks).forEach(function (reservationLink) {
-        reservationLink.href += url
+        reservationLink.href += '?' + url
       })
     }
 
@@ -78,32 +76,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
       d21Trigger.forEach(function (trigger) {
         trigger.addEventListener('click', function () {
-			setTimeout(function () {
-				let dirsIframeContainer = document.querySelector('#d21-modal-fullsize')
-				if (dirsIframeContainer) {
-					let dirsIframe = dirsIframeContainer.querySelector('iframe')
-					console.log('dirsIframe: ' + dirsIframe)
-					if (dirsIframe && !dirsIframe.src.includes('gclid') && !dirsIframe.src.includes('fclid')) {
-						dirsIframe.addEventListener('load', function () {
-							this.src += url
-						}, { once: true })
-					}
-				}
-			}, 2000)
-		})
+          setTimeout(function () {
+            let dirsIframeContainer = document.querySelector('#d21-modal-fullsize')
+
+            if (dirsIframeContainer) {
+              let dirsIframe = dirsIframeContainer.querySelector('iframe')
+
+              if (dirsIframe) {
+                let separator = dirsIframe.src.includes('?') ? '&' : '?'
+
+                dirsIframe.addEventListener('load', function () {
+                  this.src += separator + getAllStoredParams()
+                }, { once: true })
+              }
+            }
+          }, 2000)
+        })
       })
     }
 
-    // Hoteliers Guru
     if (hoteliersReservationLinks.length > 0) {
       Array.from(hoteliersReservationLinks).forEach(function (hoteliersReservationLink) {
-        hoteliersReservationLink.href += url
+        hoteliersReservationLink.href += '?' + url
       })
     }
 
     if (hoteliersReservationForms.length > 0) {
       Array.from(hoteliersReservationForms).forEach(function (reservationForm) {
-        reservationForm.action += url
+        reservationForm.action += '?' + url
       })
     }
   }
