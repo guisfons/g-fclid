@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function getAllStoredParams() {
     var url = ''
-    for (var i = 0 i < localStorage.length i++) {
+    for (var i = 0; i < localStorage.length; i++) {
       var key = localStorage.key(i)
       var value = getLocalStorageWithExpiry(key)
       if (value) {
